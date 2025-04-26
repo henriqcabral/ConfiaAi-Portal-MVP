@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConfiaAI Seguros - Entenda. Compare. Escolha com clareza.</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">Confia<span>AI</span> Seguros</div>
+            <nav>
+                <!-- Simplified navigation for now -->
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section with Chat -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Entenda. Compare. Escolha com clareza.</h1>
+                <h2>Com IA que explica coberturas, mostra experiências reais e ajuda você a tomar uma decisão consciente.</h2>
+                
+                <div class="value-proposition">
+                    <p>Não é sobre o seguro mais caro ou mais barato — é sobre entender o que faz sentido para você.</p>
+                </div>
+                
+                <!-- Chat Container - Central Focus -->
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-header">
+                        <span>Assistente ConfiaAI</span>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Initial bot message -->
+                        <div class="message bot-message">
+                            Olá! Sou o assistente da ConfiaAI Seguros. Estou aqui para ajudar você a encontrar o seguro de carro ideal para suas necessidades. Vamos começar? Qual é o seu nome?
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="userInput" placeholder="Digite sua mensagem aqui..." aria-label="Digite sua mensagem">
+                        <button id="sendButton">Enviar</button>
+                    </div>
+                </div>
+                
+                <button class="cta-button" id="startChatButton">Fique seguro já!</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hidden sections that will be shown during the flow -->
+    
+    <!-- Preliminary Comparison Section (Initially Hidden) -->
+    <section class="comparison-section hidden" id="preliminaryComparison">
+        <div class="container">
+            <h2 class="text-center">Comparação Preliminar de Seguradoras</h2>
+            <p class="text-center mb-4">Com base nas suas informações, estas são as opções que melhor se adequam ao seu perfil:</p>
+            
+            <div class="comparison-container" id="comparisonContainer">
+                <!-- Insurance cards will be dynamically inserted here -->
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="cta-button" id="proceedToQuotationButton">Prosseguir para Cotação Detalhada</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Detailed Quotation Form (Initially Hidden) -->
+    <section class="quotation-section hidden" id="detailedQuotation">
+        <div class="container">
+            <h2 class="text-center">Cotação Detalhada</h2>
+            <p class="text-center mb-4">Precisamos de algumas informações adicionais para finalizar sua cotação:</p>
+            
+            <form id="quotationForm" class="quotation-form">
+                <!-- Form fields will be dynamically inserted here based on selected insurers -->
+            </form>
+            
+            <div class="text-center mt-4">
+                <button class="cta-button" id="getQuotationButton">Obter Cotação Final</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Results Comparison (Initially Hidden) -->
+    <section class="results-section hidden" id="resultsComparison">
+        <div class="container">
+            <h2 class="text-center">Resultados da Cotação</h2>
+            <p class="text-center mb-4">Aqui estão as cotações detalhadas das seguradoras selecionadas:</p>
+            
+            <div class="comparison-container" id="resultsContainer">
+                <!-- Results cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">Confia<span>AI</span> Seguros</div>
+                <div class="footer-links">
+                    <a href="#">Sobre Nós</a>
+                    <a href="#">Política de Privacidade</a>
+                    <a href="#">Termos de Uso</a>
+                    <a href="#">Contato</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2025 ConfiaAI Seguros. Todos os direitos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Details -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div id="modalContent">
+                <!-- Modal content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
