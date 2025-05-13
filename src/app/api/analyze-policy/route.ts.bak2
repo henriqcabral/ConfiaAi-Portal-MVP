@@ -1,0 +1,143 @@
+import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
+import pdfParse from 'pdf-parse';
+
+// Inicializa o cliente OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Configuração do runtime
+export const runtime = 'nodejs';
+
+export async function POST(request: NextRequest) {
+  console.log('Iniciando processamento do arquivo...');
+
+  try {
+    // Verifica se a chave de API está configurada
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('Chave de API da OpenAI não configurada');
+      return NextResponse.json(
+        { error: 'A chave de API da OpenAI não está configurada' },
+        { status: 500 }
+      );
+    }
+
+    // Extrai o arquivo da requisição
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+
+    if (!file) {
+      console.error('Nenhum arquivo enviado');
+      return NextResponse.json(
+        { error: 'Nenhum arquivo foi enviado' },
+        { status: 400 }
+      );
+    }
+
+    console.log(file);
+    
+    // Converte o arquivo para ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    console.log('Iniciando extração do texto do PDF...');
+
+    // Extrai o texto do PDF
+    const pdfData = await pdfParse(buffer);
+    const pdfText = pdfData.text;
+
+    console.log('Texto do PDF extraído com sucesso');    
+
+    return new Response(JSON.stringify({ "content": "Arquivo analisado, é verdade esse bilete" }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+
+
+  } catch (error) {
+    console.error('Erro ao processar o arquivo:', error);
+    return NextResponse.json(
+      { error: 'Erro ao processar o arquivo' },
+      { status: 500 }
+    );
+  }
+
+
+
+
+
+  //   console.log('Tipo do arquivo:', file.type);
+
+  //   // Verifica se o arquivo é um PDF
+  //   if (file.type !== 'application/pdf') {
+  //     console.error('Tipo de arquivo inválido:', file.type);
+  //     return NextResponse.json(
+  //       { error: 'O arquivo deve ser um PDF' },
+  //       { status: 400 }
+  //     );
+  //   }
+
+
+
+  //   // Cria o prompt para a API da OpenAI
+  //   const prompt = `
+  //     Analise o seguinte texto de uma apólice de seguro de automóvel e extraia as informações principais em formato JSON.
+  //     O JSON deve conter os seguintes campos:
+  //     - policyNumber: número da apólice
+  //     - insurer: nome da seguradora
+  //     - validFrom: data de início da vigência (formato DD/MM/AAAA)
+  //     - validTo: data de término da vigência (formato DD/MM/AAAA)
+  //     - vehicle: objeto com make (marca), model (modelo), year (ano) e licensePlate (placa)
+  //     - coverages: array de objetos com title (título), description (descrição) e limit (limite)
+  //     - deductible: valor da franquia
+  //     - exclusions: array de strings com as exclusões
+  //     - assistance: array de strings com os serviços de assistência 24h
+
+  //     Texto da apólice:
+  //     ${pdfText}
+
+  //     Retorne apenas o JSON, sem nenhum texto adicional.
+  //   `;
+
+  //   console.log('Chamando API da OpenAI...');
+
+  //   // Chama a API da OpenAI
+  //   const completion = await openai.chat.completions.create({
+  //     model: 'gpt-4',
+  //     messages: [
+  //       { role: 'system', content: 'Você é um assistente especializado em extrair informações de apólices de seguro.' },
+  //       { role: 'user', content: prompt }
+  //     ],
+  //     temperature: 0.1,
+  //     response_format: { type: 'json_object' },
+  //   });
+
+  //   // Extrai a resposta do assistente
+  //   const responseText = completion.choices[0]?.message?.content || '{}';
+    
+  //   console.log('Resposta da OpenAI recebida');
+
+  //   // Tenta fazer o parse do JSON
+  //   try {
+  //     const policyData = JSON.parse(responseText);
+  //     console.log('JSON parseado com sucesso');
+  //     return NextResponse.json(policyData);
+  //   } catch (error) {
+  //     console.error('Erro ao fazer parse do JSON:', error);
+  //     return NextResponse.json(
+  //       { error: 'Erro ao processar os dados da apólice' },
+  //       { status: 500 }
+  //     );
+  //   }
+  // } catch (error) {
+  //   console.error('Erro ao processar o arquivo:', error);
+  //   return NextResponse.json(
+  //     { error: 'Erro ao processar o arquivo' },
+  //     { status: 500 }
+  //   );
+  // }
+} 

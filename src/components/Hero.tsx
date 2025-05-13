@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import FileUpload from './FileUpload';
-import PolicyResult from './PolicyResult';
+import AnalysisView from './AnalysisView';
 
 const Hero = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,21 +18,39 @@ const Hero = () => {
     formData.append('file', file);
 
     try {
-      console.log('Enviando arquivo para análise...');
-      const response = await fetch('/api/analyze-policy', {
-        method: 'POST',
-        body: formData,
+      console.log('Enviando arquivo para análise...', {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size
       });
 
-      console.log('Resposta recebida:', response.status);
+      const response = await fetch('http://localhost:8080/api/analyze-policy', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
+        cache: 'no-store',
+      });
+
+      console.log('Resposta recebida:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        url: response.url
+      });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Falha ao processar o arquivo');
+        const errorText = await response.text();
+        console.error('Erro na resposta:', errorText);
+        throw new Error(`Falha ao processar o arquivo: ${response.status} ${response.statusText}\n${errorText}`);
       }
 
       const data = await response.json();
       console.log('Dados recebidos:', data);
+      if (data.error) {
+        throw new Error(data.error);
+      }
       setPolicyData(data);
     } catch (err) {
       console.error('Erro ao enviar arquivo:', err);
@@ -41,6 +59,10 @@ const Hero = () => {
       setIsLoading(false);
     }
   };
+
+  if (policyData) {
+    return <AnalysisView data={policyData} />;
+  }
 
   return (
     <section className="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">
@@ -63,17 +85,12 @@ const Hero = () => {
             </div>
           </div>
           <div>
-            <div className="bg-white p-8 rounded-lg shadow-xl mb-6">
+            <div className="bg-white p-8 rounded-lg shadow-xl">
               <h2 className="text-2xl font-bold mb-6 text-gray-800">Analise sua Apólice Agora</h2>
               <FileUpload onFileUpload={handleFileUpload} isLoading={isLoading} />
               {error && (
                 <div className="mt-6 bg-red-50 text-red-700 p-4 rounded-lg">
                   <p>{error}</p>
-                </div>
-              )}
-              {policyData && (
-                <div className="mt-6">
-                  <PolicyResult data={policyData} />
                 </div>
               )}
             </div>

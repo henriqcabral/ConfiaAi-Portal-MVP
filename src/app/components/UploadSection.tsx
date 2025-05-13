@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
-import PolicyResult from '@/components/PolicyResult';
+import AnalysisView from '@/components/AnalysisView';
 import ChatBot from '@/components/ChatBot';
 
 const UploadSection = () => {
@@ -19,21 +19,38 @@ const UploadSection = () => {
     formData.append('file', file);
 
     try {
-      console.log('Enviando arquivo para análise...');
-      const response = await fetch('/api/analyze-policy', {
+      console.log('Enviando arquivo para análise...', {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size
+      });
+      
+      const response = await fetch('http://localhost:8080/api/analyze-policy', {
         method: 'POST',
         body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
-      console.log('Resposta recebida:', response.status);
+      console.log('Resposta recebida:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        url: response.url
+      });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Falha ao processar o arquivo');
+        const errorText = await response.text();
+        console.error('Erro na resposta:', errorText);
+        throw new Error(`Falha ao processar o arquivo: ${response.status} ${response.statusText}\n${errorText}`);
       }
 
       const data = await response.json();
       console.log('Dados recebidos:', data);
+      if (data.error) {
+        throw new Error(data.error);
+      }
       setPolicyData(data);
     } catch (err) {
       console.error('Erro ao enviar arquivo:', err);
@@ -42,6 +59,10 @@ const UploadSection = () => {
       setIsLoading(false);
     }
   };
+
+  if (policyData) {
+    return <AnalysisView data={policyData} />;
+  }
 
   return (
     <section id="upload" className="py-20 bg-gray-50">
@@ -61,8 +82,6 @@ const UploadSection = () => {
               <p>{error}</p>
             </div>
           )}
-
-          {policyData && <PolicyResult data={policyData} />}
         </div>
 
         {policyData && (
