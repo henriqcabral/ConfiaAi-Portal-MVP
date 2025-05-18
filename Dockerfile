@@ -2,6 +2,9 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Define o argumento de build
+ARG OPENAI_API_KEY
+
 # Instala dependências
 COPY package*.json ./
 RUN npm ci
@@ -19,6 +22,7 @@ WORKDIR /app
 # Define variáveis de ambiente
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # Copia apenas os arquivos necessários
 COPY --from=builder /app/next.config.js ./
