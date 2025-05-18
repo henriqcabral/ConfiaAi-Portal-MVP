@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Inicializa o cliente OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Inicializa o cliente OpenAI com verificação da chave
+const getOpenAIClient = () => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY não está configurada');
+  }
+  return new OpenAI({ apiKey });
+};
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +19,8 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    const openai = getOpenAIClient();
 
     // Extrai os dados da requisição
     const { message, policyData } = await request.json();

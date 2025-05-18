@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Define o argumento de build
 ARG OPENAI_API_KEY
+ARG NEXTAUTH_SECRET
 
 # Instala dependências
 COPY package*.json ./
@@ -14,6 +15,10 @@ COPY . .
 
 # Cria o diretório public se não existir e adiciona um arquivo .gitkeep
 RUN mkdir -p public && touch public/.gitkeep
+
+# Define as variáveis de ambiente para o build
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 
 # Gera a build de produção
 RUN npm run build
@@ -26,6 +31,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV OPENAI_API_KEY=${OPENAI_API_KEY}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 
 # Cria diretórios necessários
 RUN mkdir -p public
@@ -35,8 +41,6 @@ COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public/.gitkeep ./public/.gitkeep
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-
-ENV NEXTAUTH_SECRET='PuiNoa2U6J/BtTOeFAZ2OhgeEDIpEW2JjcauvwaPoaY='
 
 # Expõe a porta
 EXPOSE 8080
