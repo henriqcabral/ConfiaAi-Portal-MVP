@@ -31,6 +31,8 @@ const Hero = () => {
         headers: {
           'Accept': 'application/json',
         },
+        credentials: 'include',
+        mode: 'cors',
         cache: 'no-store',
       });
 
