@@ -5,6 +5,7 @@ import type { JWT } from 'next-auth/jwt';
 import type { User } from 'next-auth';
 
 const handler = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',

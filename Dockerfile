@@ -36,6 +36,8 @@ COPY --from=builder /app/public/.gitkeep ./public/.gitkeep
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+ENV NEXTAUTH_SECRET='PuiNoa2U6J/BtTOeFAZ2OhgeEDIpEW2JjcauvwaPoaY='
+
 # Expõe a porta
 EXPOSE 8080
 

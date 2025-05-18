@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import AnalysisView from '@/components/AnalysisView';
 import ChatBot from '@/components/ChatBot';
+import { getApiUrl } from '@/config/api';
 
 const UploadSection = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ const UploadSection = () => {
         fileSize: file.size
       });
       
-      const response = await fetch('http://localhost:8080/api/analyze-policy', {
+      const response = await fetch(getApiUrl('ANALYZE_POLICY'), {
         method: 'POST',
         body: formData,
         headers: {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import FileUpload from './FileUpload';
 import AnalysisView from './AnalysisView';
+import { getApiUrl } from '@/config/api';
 
 const Hero = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ const Hero = () => {
         fileSize: file.size
       });
 
-      const response = await fetch('http://localhost:8080/api/analyze-policy', {
+      const response = await fetch(getApiUrl('ANALYZE_POLICY'), {
         method: 'POST',
         body: formData,
         headers: {
