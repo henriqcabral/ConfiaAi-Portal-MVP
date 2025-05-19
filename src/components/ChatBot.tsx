@@ -47,7 +47,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ policyData }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'bot',
-      content: `Olá! Sou o assistente virtual do Confia.AI. Analisei sua apólice da ${policyData.insurer} e posso ajudar você a entender melhor os detalhes. Como posso ajudar?`
+      content: `Olá! Sou o assistente virtual do Confia.<span class="text-yellow-500">AI</span>. Analisei sua apólice da ${policyData.insurer} e posso ajudar você a entender melhor os detalhes. Como posso ajudar?`
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -86,7 +86,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ policyData }) => {
       {/* Cabeçalho do chat */}
       <div className="p-4 border-b">
         <h3 className="text-lg font-semibold text-gray-800">Assistente Virtual</h3>
-        <p className="text-sm text-gray-600">Confia.AI</p>
+        <p className="text-sm text-gray-600">Confia.<span className="text-yellow-500">AI</span></p>
       </div>
 
       {/* Área de mensagens */}
