@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import FileUpload from './FileUpload';
-import AnalysisView from './AnalysisView';
 import { getApiUrl } from '@/config/api';
+import { PolicyData } from '@/lib/analyze-policy';
 
 export default function Hero() {
   const router = useRouter();
@@ -20,11 +20,11 @@ export default function Hero() {
     formData.append('file', file);
 
     try {
-      console.log('Enviando arquivo para análise...', {
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size
-      });
+      // console.log('Enviando arquivo para análise...', {
+      //   fileName: file.name,
+      //   fileType: file.type,
+      //   fileSize: file.size
+      // });
 
       const response = await fetch(getApiUrl('ANALYZE_POLICY'), {
         method: 'POST',
@@ -34,32 +34,31 @@ export default function Hero() {
         },
         credentials: 'include',
         mode: 'cors',
-        cache: 'no-store',
       });
 
-      console.log('Resposta recebida:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        url: response.url
-      });
+      // console.log('Resposta recebida:', {
+      //   status: response.status,
+      //   statusText: response.statusText,
+      //   headers: Object.fromEntries(response.headers.entries()),
+      //   url: response.url
+      // });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Erro na resposta:', errorText);
+        // console.error('Erro na resposta:', errorText);
         throw new Error(`Falha ao processar o arquivo: ${response.status} ${response.statusText}\n${errorText}`);
       }
 
-      const data = await response.json();
-      console.log('Dados recebidos:', data);
-      if (data.error) {
-        throw new Error(data.error);
+      const data = await response.json() as PolicyData;
+      // console.log('Dados recebidos:', data);
+      if ((data as any).error) { // Mantido cast para any para verificar a propriedade 'error' que pode vir na resposta de erro
+        throw new Error((data as any).error);
       }
       
       // Ao invés de definir policyData, redireciona para a página de análise
       router.push('/analise');
     } catch (err) {
-      console.error('Erro ao enviar arquivo:', err);
+      // console.error('Erro ao enviar arquivo:', err);
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao processar sua apólice. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);

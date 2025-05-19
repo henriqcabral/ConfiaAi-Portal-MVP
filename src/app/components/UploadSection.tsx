@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import AnalysisView from '@/components/AnalysisView';
 import ChatBot from '@/components/ChatBot';
+import { PolicyData } from '@/lib/analyze-policy';
 import { getApiUrl } from '@/config/api';
 
 const UploadSection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [policyData, setPolicyData] = useState<any>(null);
+  const [policyData, setPolicyData] = useState<PolicyData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileUpload = async (file: File) => {
@@ -20,11 +21,11 @@ const UploadSection = () => {
     formData.append('file', file);
 
     try {
-      console.log('Enviando arquivo para análise...', {
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size
-      });
+      // console.log('Enviando arquivo para análise...', {
+      //   fileName: file.name,
+      //   fileType: file.type,
+      //   fileSize: file.size
+      // });
       
       const response = await fetch(getApiUrl('ANALYZE_POLICY'), {
         method: 'POST',
@@ -32,29 +33,31 @@ const UploadSection = () => {
         headers: {
           'Accept': 'application/json',
         },
+        credentials: 'include',
+        mode: 'cors',
       });
 
-      console.log('Resposta recebida:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        url: response.url
-      });
+      // console.log('Resposta recebida:', {
+      //   status: response.status,
+      //   statusText: response.statusText,
+      //   headers: Object.fromEntries(response.headers.entries()),
+      //   url: response.url
+      // });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Erro na resposta:', errorText);
+        // console.error('Erro na resposta:', errorText);
         throw new Error(`Falha ao processar o arquivo: ${response.status} ${response.statusText}\n${errorText}`);
       }
 
-      const data = await response.json();
-      console.log('Dados recebidos:', data);
-      if (data.error) {
-        throw new Error(data.error);
+      const data = await response.json() as PolicyData;
+      // console.log('Dados recebidos:', data);
+      if ((data as any).error) { // Mantido cast para any para verificar a propriedade 'error' que pode vir na resposta de erro
+        throw new Error((data as any).error);
       }
       setPolicyData(data);
     } catch (err) {
-      console.error('Erro ao enviar arquivo:', err);
+      // console.error('Erro ao enviar arquivo:', err);
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao processar sua apólice. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);

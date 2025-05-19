@@ -1,14 +1,11 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { PolicyData } from '@/lib/analyze-policy';
 
-// Inicializa o cliente OpenAI com verificação da chave
-const getOpenAIClient = () => {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY não está configurada');
-  }
-  return new OpenAI({ apiKey });
-};
+// Inicializa o cliente OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: Request) {
   try {
@@ -20,10 +17,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const openai = getOpenAIClient();
-
     // Extrai os dados da requisição
-    const { message, policyData } = await request.json();
+    const { message, policyData }: { message: string; policyData: PolicyData | null } = await request.json();
 
     if (!message) {
       return NextResponse.json(
@@ -46,13 +41,13 @@ export async function POST(request: Request) {
         - Franquia: ${policyData.deductible}
         
         Coberturas:
-        ${policyData.coverages.map((c: any) => `- ${c.title}: ${c.description}. Limite: ${c.limit}`).join('\n')}
+        ${policyData.coverages.map((c) => `- ${c.title}: ${c.description}. Limite: ${c.limit}`).join('\n')}
         
         Exclusões:
-        ${policyData.exclusions.map((e: string) => `- ${e}`).join('\n')}
+        ${policyData.exclusions.map((e) => `- ${e}`).join('\n')}
         
         Assistência 24h:
-        ${policyData.assistance.map((a: string) => `- ${a}`).join('\n')}
+        ${policyData.assistance.map((a) => `- ${a}`).join('\n')}
       `;
     }
 
@@ -79,7 +74,7 @@ export async function POST(request: Request) {
     // Retorna a resposta
     return NextResponse.json({ message: assistantMessage });
   } catch (error) {
-    console.error('Erro ao processar a mensagem:', error);
+    // console.error('Erro ao processar a mensagem:', error);
     return NextResponse.json(
       { error: 'Erro ao processar a mensagem' },
       { status: 500 }
