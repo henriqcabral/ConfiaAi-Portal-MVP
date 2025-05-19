@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import FileUpload from './FileUpload';
-import AnalysisView from './AnalysisView';
 
-const Hero = () => {
+export default function Hero() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [policyData, setPolicyData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileUpload = async (file: File) => {
@@ -51,7 +51,9 @@ const Hero = () => {
       if (data.error) {
         throw new Error(data.error);
       }
-      setPolicyData(data);
+      
+      // Ao invés de definir policyData, redireciona para a página de análise
+      router.push('/analise');
     } catch (err) {
       console.error('Erro ao enviar arquivo:', err);
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao processar sua apólice. Por favor, tente novamente.');
@@ -60,31 +62,38 @@ const Hero = () => {
     }
   };
 
-  if (policyData) {
-    return <AnalysisView data={policyData} />;
-  }
-
   return (
     <section className="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Entenda sua apólice de seguro de automóvel em linguagem simples
+          <div className="space-y-8">
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+              Não entendeu sua apólice de seguro?
             </h1>
-            <p className="text-xl mb-8 text-blue-100">
-              O <span className="text-white">Confia</span><span className="text-yellow-300">.AI</span> traduz os termos técnicos e complexos da sua apólice para uma linguagem que qualquer pessoa consegue entender.
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            O Confia.AI traduz pra você.
+            </h2>            <p className="text-xl text-blue-100">
+              Carregada de termos técnicos, sua apólice esconde informações importantes. A gente decodifica tudo com IA — em segundos — pra que você saiba exatamente o que está contratando.
             </p>
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link href="#upload" className="btn-primary bg-white text-blue-600 hover:bg-gray-100">
-                Analisar minha apólice
-              </Link>
-              <Link href="#como-funciona" className="btn-secondary bg-transparent border-white text-white hover:bg-blue-600">
-                Como funciona
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-blue-50"
+                onClick={() => router.push('/upload')}
+              >
+                Quero entender minha apólice agora
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-blue-600"
+                onClick={() => router.push('/como-funciona')}
+              >
+                Veja como funciona
+              </Button>
             </div>
           </div>
-          <div>
+          <div> {/* Container para a área de upload */}
             <div className="bg-white p-8 rounded-lg shadow-xl">
               <h2 className="text-2xl font-bold mb-6 text-gray-800">Analise sua Apólice Agora</h2>
               <FileUpload onFileUpload={handleFileUpload} isLoading={isLoading} />
@@ -99,6 +108,4 @@ const Hero = () => {
       </div>
     </section>
   );
-};
-
-export default Hero; 
+} 
