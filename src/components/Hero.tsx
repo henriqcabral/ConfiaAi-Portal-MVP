@@ -70,9 +70,10 @@ export default function Hero() {
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">
               Não entendeu sua apólice de seguro?
             </h1>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            O Confia.AI traduz pra você.
-            </h2>            <p className="text-xl text-blue-100">
+            <p className="text-3xl font-semibold text-blue-100">
+              O Confia.AI traduz pra você.
+            </p>
+            <p className="text-xl text-blue-100">
               Carregada de termos técnicos, sua apólice esconde informações importantes. A gente decodifica tudo com IA — em segundos — pra que você saiba exatamente o que está contratando.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
