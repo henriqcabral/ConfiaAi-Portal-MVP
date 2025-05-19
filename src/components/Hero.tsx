@@ -71,7 +71,7 @@ export default function Hero() {
               Não entendeu sua apólice de seguro?
             </h1>
             <p className="text-3xl font-semibold text-blue-100">
-              O Confia.AI traduz pra você.
+              O Confia.<span className="text-yellow-300">AI</span> traduz pra você.
             </p>
             <p className="text-xl text-blue-100">
               Carregada de termos técnicos, sua apólice esconde informações importantes. A gente decodifica tudo com IA — em segundos — pra que você saiba exatamente o que está contratando.

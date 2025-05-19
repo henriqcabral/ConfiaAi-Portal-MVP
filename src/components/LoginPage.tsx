@@ -8,7 +8,7 @@ const LoginPage = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="p-8 bg-white rounded-lg shadow-lg max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Bem-vindo ao Confia.AI</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Bem-vindo ao Confia.<span className="text-yellow-500">AI</span></h1>
           <p className="text-gray-600">
             Faça login para analisar sua apólice de seguro
           </p>

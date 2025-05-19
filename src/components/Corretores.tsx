@@ -24,7 +24,7 @@ export default function Corretores() {
               Você é corretor de seguros?
             </h3>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              O Confia.AI ajuda seus clientes a entenderem melhor — e ajuda você a vender mais.
+              O Confia.<span className="text-yellow-500">AI</span> ajuda seus clientes a entenderem melhor — e ajuda você a vender mais.
             </h2>
             <p className="text-xl text-gray-600">
               Você já passou horas explicando uma apólice? Deixa que a gente traduz.

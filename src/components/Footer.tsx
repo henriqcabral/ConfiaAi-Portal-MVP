@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
-          <p>© 2024 Confia.AI. Todos os direitos reservados.</p>
+          <p>© 2024 Confia.<span className="text-yellow-500">AI</span>. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
