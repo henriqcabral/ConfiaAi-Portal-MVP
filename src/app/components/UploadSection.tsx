@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import AnalysisView from '@/components/AnalysisView';
 import ChatBot from '@/components/ChatBot';
-import { PolicyData } from '@/lib/analyze-policy';
+import { PolicyData } from '@/types/policy';
 import { getApiUrl } from '@/config/api';
 
 const UploadSection = () => {

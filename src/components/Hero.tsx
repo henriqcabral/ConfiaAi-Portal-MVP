@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import FileUpload from './FileUpload';
 import AnalysisView from './AnalysisView';
 import { getApiUrl } from '@/config/api';
-import { PolicyData } from '@/lib/analyze-policy';
+import { PolicyData } from '@/types/policy';
 
 export default function Hero() {
   const router = useRouter();
