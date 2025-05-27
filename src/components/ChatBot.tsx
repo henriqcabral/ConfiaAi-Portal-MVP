@@ -1,146 +1,135 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { getApiUrl } from '@/config/api';
 
-interface Message {
-  type: 'user' | 'bot';
-  content: string;
+interface Cobertura {
+  nome: string;
+  descricao: string;
+  valor: string;
 }
 
-interface Coverage {
-  title: string;
-  description: string;
-  limit: string;
+interface Beneficio {
+  nome: string;
+  descricao: string;
 }
 
 interface PolicyData {
-  policyNumber: string;
-  insurer: string;
-  validFrom: string;
-  validTo: string;
-  vehicle: {
-    make: string;
-    model: string;
-    year: string;
-    licensePlate: string;
-  };
-  coverages: Coverage[];
-  deductible: string;
-  exclusions: string[];
-  assistance: string[];
+  resumo: string;
+  coberturas: Cobertura[];
+  beneficios: Beneficio[];
+  recomendacoes: string[];
+  riscos: string[];
+}
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 interface ChatBotProps {
   policyData: PolicyData;
 }
 
-const SUGGESTED_QUESTIONS = [
-  "Quais são as coberturas básicas da minha apólice?",
-  "Qual é o valor da franquia?",
-  "Quais são as exclusões principais?",
-  "Quais serviços de assistência estão incluídos?",
-  "Qual é o período de vigência da apólice?",
-  "Quais são os limites de cobertura?",
-];
-
 const ChatBot: React.FC<ChatBotProps> = ({ policyData }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      type: 'bot',
-      content: `Olá! Sou o assistente virtual do Confia.<span class="text-yellow-500">AI</span>. Analisei sua apólice da ${policyData.insurer} e posso ajudar você a entender melhor os detalhes. Como posso ajudar?`
-    }
-  ]);
-  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSendMessage = (content: string) => {
-    if (!content.trim()) return;
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
-    // Adiciona mensagem do usuário
-    setMessages(prev => [...prev, { type: 'user', content }]);
-    setInputValue('');
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-    // Simula resposta do bot (em um cenário real, isso seria uma chamada à API)
-    setTimeout(() => {
-      let response = '';
-      
-      if (content.toLowerCase().includes('cobertura')) {
-        response = `Sua apólice inclui as seguintes coberturas principais:\n${policyData.coverages.map(c => `- ${c.title}: ${c.limit}`).join('\n')}`;
-      } else if (content.toLowerCase().includes('franquia')) {
-        response = `O valor da franquia da sua apólice é ${policyData.deductible}.`;
-      } else if (content.toLowerCase().includes('exclusão')) {
-        response = `As principais exclusões da sua apólice são:\n${policyData.exclusions.map(e => `- ${e}`).join('\n')}`;
-      } else if (content.toLowerCase().includes('assistência')) {
-        response = `Sua apólice inclui os seguintes serviços de assistência 24h:\n${policyData.assistance.map(a => `- ${a}`).join('\n')}`;
-      } else if (content.toLowerCase().includes('vigência')) {
-        response = `Sua apólice é válida de ${policyData.validFrom} até ${policyData.validTo}.`;
-      } else {
-        response = "Desculpe, não entendi sua pergunta. Você pode tentar uma das sugestões abaixo ou reformular sua pergunta.";
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage = input.trim();
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(getApiUrl('CHAT'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          policyData
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao processar sua mensagem');
       }
 
-      setMessages(prev => [...prev, { type: 'bot', content: response }]);
-    }, 1000);
+      const data = await response.json();
+      setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.' 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
-      {/* Cabeçalho do chat */}
-      <div className="p-4 border-b">
-        <h3 className="text-lg font-semibold text-gray-800">Assistente Virtual</h3>
-        <p className="text-sm text-gray-600">Confia.<span className="text-yellow-500">AI</span></p>
-      </div>
-
-      {/* Área de mensagens */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-[80%] rounded-lg p-3 ${
-                message.type === 'user'
+                message.role === 'user'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              <p className="whitespace-pre-line">{message.content}</p>
+              {message.content}
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-gray-100 text-gray-800 rounded-lg p-3">
+              Processando...
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Sugestões de perguntas */}
-      <div className="p-4 border-t">
-        <div className="flex flex-wrap gap-2 mb-4">
-          {SUGGESTED_QUESTIONS.map((question, index) => (
-            <button
-              key={index}
-              onClick={() => handleSendMessage(question)}
-              className="text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full"
-            >
-              {question}
-            </button>
-          ))}
-        </div>
-
-        {/* Input de mensagem */}
+      <form onSubmit={handleSubmit} className="p-4 border-t">
         <div className="flex gap-2">
           <input
             type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(inputValue)}
-            placeholder="Digite sua pergunta..."
-            className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Digite sua mensagem..."
+            className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={isLoading}
           />
           <button
-            onClick={() => handleSendMessage(inputValue)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="submit"
+            disabled={isLoading}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
             Enviar
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

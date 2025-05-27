@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import FileUpload from './FileUpload';
+import AnalysisView from './AnalysisView';
 import { getApiUrl } from '@/config/api';
 import { PolicyData } from '@/lib/analyze-policy';
 
@@ -11,6 +12,7 @@ export default function Hero() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [policyData, setPolicyData] = useState<PolicyData | null>(null);
 
   const handleFileUpload = async (file: File) => {
     setIsLoading(true);
@@ -55,8 +57,8 @@ export default function Hero() {
         throw new Error((data as any).error);
       }
       
-      // Ao invés de definir policyData, redireciona para a página de análise
-      router.push('/analise');
+      // Atualiza o estado com os dados da apólice
+      setPolicyData(data);
     } catch (err) {
       // console.error('Erro ao enviar arquivo:', err);
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao processar sua apólice. Por favor, tente novamente.');
@@ -64,6 +66,11 @@ export default function Hero() {
       setIsLoading(false);
     }
   };
+
+  // Se tiver dados da apólice, mostra a view de análise
+  if (policyData) {
+    return <AnalysisView data={policyData} />;
+  }
 
   return (
     <section className="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">

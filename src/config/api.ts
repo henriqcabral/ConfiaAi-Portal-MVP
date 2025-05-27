@@ -1,7 +1,8 @@
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'https://confiaai-backend-dyg5dbcfaugfaqft.canadacentral-01.azurewebsites.net',
   ENDPOINTS: {
-    ANALYZE_POLICY: '/api/analyze-policy'
+    ANALYZE_POLICY: '/api/analyze-policy',
+    CHAT: '/api/chat'
   }
 } as const;
 
